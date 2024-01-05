@@ -11,8 +11,8 @@ let handleUserLogin = (email, password) => {
                 //compare the password
                 let user = await db.User.findOne({
                     where : { email: email },
+                    //chỉ return về 3 fields
                     attributes: ['email', 'roleId', 'password'],
-                    raw: true,
                 })
                 if (user) {
                     //khi nao create user no compare password thì đổi lại
@@ -60,10 +60,27 @@ let checkUserEmail = (userEmail) => {
     })
 }
 
-let compareUserPassword = (userPassword) => {
+let getAllUsers = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            
+            let users = '';
+            if (userId === 'All') {
+                users = await db.User.findAll({
+                    attributes: {
+                        //sẽ return về password
+                        exclude: ['password'],
+                    }
+                })
+            } 
+            if (userId && userId !== 'All') {
+                users = await db.User.findOne({
+                    where: { id: userId },
+                    attributes: {
+                        exclude: ['password'],
+                    },
+                })
+            }
+            resolve(users)
         } catch (error) {
             reject(error)
         }
@@ -72,5 +89,5 @@ let compareUserPassword = (userPassword) => {
 
 module.exports = {
     handleUserLogin: handleUserLogin,
-    checkUserEmail: checkUserEmail,
+    getAllUsers: getAllUsers,
 }
