@@ -102,7 +102,7 @@ let createNewUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             //validate form
-            if (!data.email || !data.password || !data.firstName || !data.lastName) {
+            if (!data.email || !data.password || !data.firstName || !data.lastName || !data.address) {
                 resolve({
                     errCode: 1,
                     message: 'Please provide all required fields: email, password, firstName, lastName'
@@ -124,7 +124,7 @@ let createNewUser = (data) => {
                     password: hashPasswordFromBcrypt,
                     firstName: data.firstName,
                     lastName: data.lastName,
-                    address: data.address || '', 
+                    address: data.address, 
                     phoneNumber: data.phoneNumber || '', 
                     gender: data.gender || '', 
                     roleId: data.roleId === '1' ? true : false
@@ -206,10 +206,40 @@ let editUser = (data) => {
     })
 }
 
+let getAllCodeService = (typeInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if(!typeInput) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing required parameter!'
+                })
+            } else {
+                // let res = {};
+                let allCode = await db.AllCode.findAll({
+                    where: { type: typeInput }
+                });
+                // res.errCode = 0;
+                // res.message = 'OK'
+                // res.data = allCode
+                // resolve(res)
+                resolve({
+                    errCode: 0,
+                    message: 'OK',
+                    data: allCode
+                });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
 module.exports = {
     handleUserLogin: handleUserLogin,
     getAllUsers: getAllUsers,
     createNewUser: createNewUser,
     deleteUser: deleteUser,
-    editUser: editUser
+    editUser: editUser,
+    getAllCodeService: getAllCodeService
 }
